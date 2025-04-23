@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
-import { keyframes } from '@emotion/react';
 import '@fontsource-variable/urbanist';
 import '@fontsource-variable/eb-garamond';
 
