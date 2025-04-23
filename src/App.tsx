@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { motion } from 'framer-motion';
 import { keyframes } from '@emotion/react';
@@ -16,11 +16,6 @@ const zoomVariants = {
   animate: { scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 320, damping: 30, duration: 0.7 } },
   hover: { scale: 1.04, boxShadow: '0 12px 36px rgba(0,0,0,0.13)' }
 };
-
-const runningUnderline = keyframes`
-  0% { left: -100%; }
-  100% { left: 100%; }
-`;
 
 const Wrapper = styled.div`
   min-height: 100vh;
