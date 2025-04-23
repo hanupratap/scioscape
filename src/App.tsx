@@ -42,25 +42,6 @@ const RunningFadingTitle = styled(motion.h1)`
   }
 `;
 
-const HighlightedSubtitle = styled.div`
-  display: inline-block;
-  font-family:  'EB Garamond Variable', serif;
-  font-size: 1.20rem;
-  font-weight: 400;
-  color: #a47551;
-  letter-spacing: 0.01em;
-  opacity: 0.92;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #e2c9b0 0%, #a47551 50%, #e2c9b0 100%);
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  animation: ${highlightRun} 3.5s cubic-bezier(0.4,0,0.2,1) infinite alternate;
-`;
-
 const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
