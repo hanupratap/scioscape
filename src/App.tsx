@@ -18,13 +18,14 @@ const highlightRun = keyframes`
 
 const RunningFadingTitle = styled(motion.h1)`
   font-family: 'EB Garamond Variable', serif;
-  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-size: clamp(1.5rem, 4vw, 2.8rem);
   font-weight: 400;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
   color: #7a5a36;
   line-height: 1.1;
   text-align: center;
   margin-bottom: 2.5rem;
+  text-transform: uppercase;
   background: linear-gradient(90deg, #e2c9b0 0%, #7a5a36 50%, #e2c9b0 100%);
   background-size: 200% 100%;
   background-position: 0% 0;
@@ -33,6 +34,7 @@ const RunningFadingTitle = styled(motion.h1)`
   background-clip: text;
   text-fill-color: transparent;
   animation: backgroundMove 10s linear infinite;
+  word-spacing: 0.25em;
 
   @keyframes backgroundMove {
     0% { background-position: 0% 0; }
@@ -42,12 +44,13 @@ const RunningFadingTitle = styled(motion.h1)`
 
 const HighlightedSubtitle = styled.div`
   display: inline-block;
-  font-family: 'Urbanist Variable', 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 1.35rem;
+  font-family:  'EB Garamond Variable', serif;
+  font-size: 1.20rem;
   font-weight: 400;
   color: #a47551;
   letter-spacing: 0.01em;
   opacity: 0.92;
+  text-transform: uppercase;
   background: linear-gradient(90deg, #e2c9b0 0%, #a47551 50%, #e2c9b0 100%);
   background-size: 200% 100%;
   background-position: 100% 0;
@@ -114,23 +117,40 @@ const Gallery = styled.section`
 const GalleryItem = styled(motion.div)`
   width: 400px;
   height: 520px;
-  background: #f9f6f2;
+  background: transparent;
   border-radius: 1.5rem;
-  box-shadow: 0 4px 24px rgba(122, 90, 54, 0.07);
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  border: 1.5px solid #e2c9b0;
   transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
   will-change: transform, opacity;
   &:hover {
-    box-shadow: 0 8px 32px rgba(122, 90, 54, 0.13);
-    border-color: #d1b08a;
     transform: translateY(-4px) scale(1.025);
   }
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  justify-content: stretch;
+  justify-content: flex-start;
+`;
+
+const CardTitle = styled.div`
+  font-family: 'EB Garamond Variable', serif;
+  font-size: 1.20rem;
+  font-weight: 400;
+  color: #a47551;
+  letter-spacing: 0.01em;
+  opacity: 0.92;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #e2c9b0 0%, #a47551 50%, #e2c9b0 100%);
+  background-size: 200% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  animation: ${highlightRun} 3.5s cubic-bezier(0.4,0,0.2,1) infinite alternate;
+  padding: 1.2rem 0 0.7rem 0;
+  text-align: center;
 `;
 
 const GalleryImage = styled.img`
@@ -207,41 +227,49 @@ function App() {
         </Logo>
       </Navbar>
       <Main>
-        <RunningFadingTitle>
+        <RunningFadingTitle style={{
+          width:  'calc(2 * 400px + 2.5vw)',
+          maxWidth: 900,
+          margin: '0 auto 2.5rem auto',
+          display: 'block',
+        }}>
           Where Ideas become Experiences
         </RunningFadingTitle>
-        <div style={{
-          width: '100%',
-          maxWidth: 900,
-          margin: '0 auto',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 400px)',
-          justifyContent: 'center',
-          gap: '2.5vw',
-          marginBottom: '2.2rem',
-        }}>
-          <HighlightedSubtitle style={{textAlign: 'center', width: '400px', margin: 0}}>
-            Contemporary Residential Homes
-          </HighlightedSubtitle>
-          <HighlightedSubtitle style={{textAlign: 'center', width: '400px', margin: 0}}>
-            Commercial office space with spacious interiors
-          </HighlightedSubtitle>
-        </div>
         <Gallery style={{width: '100%', maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(2, 400px)', justifyContent: 'center', gap: '2.5vw'}}>
-          {cards.map((card, idx) => (
-            <GalleryItem
-              variants={zoomVariants}
-              initial="initial"
-              animate="animate"
-              whileHover="hover"
-              transition={{ duration: 0.5, type: 'spring', stiffness: 180, damping: 24, delay: idx * 0.1 }}
-              onClick={() => setOpenIndex(idx)}
-              style={{ zIndex: openIndex === idx ? 100 : 1 }}
-              key={card.label}
-            >
-              <GalleryImage src={card.img} alt={card.label} />
-            </GalleryItem>
-          ))}
+          <GalleryItem
+            variants={zoomVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+            transition={{ duration: 0.5, type: 'spring', stiffness: 180, damping: 24, delay: 0 }}
+            onClick={() => setOpenIndex(0)}
+            style={{ zIndex: openIndex === 0 ? 100 : 1 }}
+            key={cards[0].label}
+          >
+            <CardTitle>
+              Residential Bungalows
+            </CardTitle>
+            <div style={{flex: 1, display: 'flex'}}>
+              <GalleryImage src={cards[0].img} alt={cards[0].label} />
+            </div>
+          </GalleryItem>
+          <GalleryItem
+            variants={zoomVariants}
+            initial="initial"
+            animate="animate"
+            whileHover="hover"
+            transition={{ duration: 0.5, type: 'spring', stiffness: 180, damping: 24, delay: 0.1 }}
+            onClick={() => setOpenIndex(1)}
+            style={{ zIndex: openIndex === 1 ? 100 : 1 }}
+            key={cards[1].label}
+          >
+            <CardTitle>
+              Commercial spaces
+            </CardTitle>
+            <div style={{flex: 1, display: 'flex'}}>
+              <GalleryImage src={cards[1].img} alt={cards[1].label} />
+            </div>
+          </GalleryItem>
         </Gallery>
         <SquigglyBorderWrapper>
           <ContactCardContent
@@ -253,7 +281,7 @@ function App() {
             onClick={() => setContactOpen(true)}
           >
             <img
-              src="https://randomuser.me/api/portraits/women/65.jpg"
+              src="https://randomuser.me/api/portraits/women/61.jpg"
               alt="Anagha Vaidya"
               style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 1px 8px rgba(0,0,0,0.10)' }}
             />
@@ -319,7 +347,7 @@ function App() {
               onClick={e => e.stopPropagation()}
             >
               <img
-                src="https://randomuser.me/api/portraits/women/3.jpg"
+                src="https://randomuser.me/api/portraits/women/61.jpg"
                 alt="Anagha Vaidya"
                 style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 1px 8px rgba(0,0,0,0.10)', marginBottom: 16 }}
               />
