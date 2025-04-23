@@ -271,6 +271,14 @@ function App() {
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
               <span style={{fontWeight: 700, fontSize: '1.18rem', color: '#7a5a36', letterSpacing: '0.01em'}}>Anagha Vaidya</span>
               <span style={{fontSize: '1rem', color: '#a47551', marginBottom: 2}}>Architect</span>
+              <div style={{display: 'flex', gap: '0.7rem', marginTop: 8}}>
+                <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" style={{color: '#a47551', fontSize: '1.3rem', textDecoration: 'none'}} aria-label="Instagram">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a47551" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+                </a>
+                <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" style={{color: '#a47551', fontSize: '1.3rem', textDecoration: 'none'}} aria-label="Facebook">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a47551" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a4 4 0 0 0-4 4v3H7v4h4v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3z"/></svg>
+                </a>
+              </div>
             </div>
           </ContactCardContent>
         </SquigglyBorderWrapper>
