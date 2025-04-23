@@ -5,35 +5,15 @@ import '@fontsource-variable/urbanist';
 import '@fontsource-variable/eb-garamond';
 import { keyframes } from '@emotion/react';
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 40 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 1, ease: [0.6, 0.01, 0.05, 0.95] }
-};
-
 const zoomVariants = {
   initial: { scale: 0.96, opacity: 0, y: 32 },
   animate: { scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 180, damping: 24, duration: 0.5 } },
   hover: { scale: 1.03 }
 };
 
-const runningTitle = keyframes`
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(-100%); }
-`;
-
 const highlightRun = keyframes`
   0% { background-position: 100% 0; }
   100% { background-position: 0% 0; }
-`;
-
-const fadeRun = keyframes`
-  0% { opacity: 0.2; }
-  10% { opacity: 0.5; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  90% { opacity: 0.5; }
-  100% { opacity: 0.2; }
 `;
 
 const RunningFadingTitle = styled(motion.h1)`
@@ -58,24 +38,6 @@ const RunningFadingTitle = styled(motion.h1)`
     0% { background-position: 0% 0; }
     100% { background-position: 100% 0; }
   }
-`;
-
-const AnimatedTitle = styled(motion.h1)`
-  font-family: 'EB Garamond Variable', serif;
-  font-size: clamp(2.5rem, 8vw, 6rem);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: #7a5a36;
-  line-height: 1.1;
-  text-align: center;
-  margin-bottom: 2.5rem;
-  background: linear-gradient(90deg, #7a5a36 60%, #e2c9b0 100%);
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
 `;
 
 const HighlightedSubtitle = styled.div`
@@ -140,46 +102,6 @@ const Main = styled.main`
   padding: 6vw 2vw 4vw 2vw;
 `;
 
-const Title = styled(motion.h1)`
-  font-family: 'EB Garamond Variable', serif;
-  font-size: clamp(2.5rem, 8vw, 6rem);
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  text-align: center;
-  margin-bottom: 2.5rem;
-  line-height: 1.1;
-  color: #7a5a36;
-`;
-
-const UnderlineWrapper = styled.span`
-  position: relative;
-  display: inline-block;
-`;
-
-const SquiggleSvg = styled.svg`
-  position: absolute;
-  left: 0;
-  bottom: -0.3em; /* Lower the squiggle so it's fully visible */
-  width: 100%;
-  height: 0.8em; /* Increase height for more space */
-  pointer-events: none;
-  z-index: 0;
-`;
-
-const AnimatedSquiggle = styled(motion.path)`
-  stroke: #5e5e5e; // subtle minimalist gray
-  stroke-width: 4;
-  fill: none;
-`;
-
-const Subtitle = styled(motion.h2)`
-  font-size: clamp(1.2rem, 2.5vw, 2.2rem);
-  font-weight: 400;
-  color: #444;
-  text-align: center;
-  margin-bottom: 4rem;
-`;
-
 const Gallery = styled.section`
   display: flex;
   flex-wrap: wrap;
@@ -218,26 +140,6 @@ const GalleryImage = styled.img`
   border-radius: 1.5rem;
   background: #e2c9b0;
   display: block;
-`;
-
-const GalleryLabel = styled.div`
-  width: 100%;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1.2rem;
-  background: #fff;
-  color: #7a5a36;
-  font-size: 1.13rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  border-radius: 0 0 1.5rem 1.5rem;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-shadow: 0 -2px 12px rgba(122, 90, 54, 0.04);
 `;
 
 const SquigglyBorderWrapper = styled.div`
