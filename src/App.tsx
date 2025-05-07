@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 import { motion } from "framer-motion";
 import "@fontsource-variable/urbanist";
@@ -8,20 +8,6 @@ import emailjs from '@emailjs/browser';
 
 // Initialize EmailJS
 emailjs.init("i1ncop8"); // Your public key
-
-const zoomVariants = {
-  initial: { scale: 0.96, opacity: 0, y: 32 },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 180, damping: 24, duration: 0.5 },
-  },
-  hover: { 
-    scale: 1.02,
-    transition: { type: "spring", stiffness: 400, damping: 10 }
-  },
-};
 
 const cardVariants = {
   initial: { opacity: 0, y: 20 },
@@ -51,6 +37,30 @@ const shadowAnimation = keyframes`
   }
 `;
 
+const highlightRun = keyframes`
+  0% { background-position: 100% 0; }
+  100% { background-position: 0% 0; }
+`;
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
+const zoomVariants = {
+  initial: { scale: 0.96, opacity: 0, y: 32 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 180, damping: 24, duration: 0.5 },
+  },
+  hover: { 
+    scale: 1.02,
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  },
+};
+
 const floatingAnimation = keyframes`
   0% {
     transform: translateY(0);
@@ -61,16 +71,6 @@ const floatingAnimation = keyframes`
   100% {
     transform: translateY(0);
   }
-`;
-
-const highlightRun = keyframes`
-  0% { background-position: 100% 0; }
-  100% { background-position: 0% 0; }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
 `;
 
 const RunningFadingTitle = styled(motion.h1)`
