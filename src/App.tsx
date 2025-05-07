@@ -47,32 +47,6 @@ const fadeIn = keyframes`
   to { opacity: 1; transform: translateY(0); }
 `;
 
-const zoomVariants = {
-  initial: { scale: 0.96, opacity: 0, y: 32 },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 180, damping: 24, duration: 0.5 },
-  },
-  hover: { 
-    scale: 1.02,
-    transition: { type: "spring", stiffness: 400, damping: 10 }
-  },
-};
-
-const floatingAnimation = keyframes`
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-`;
-
 const RunningFadingTitle = styled(motion.h1)`
   font-family: "EB Garamond Variable", serif;
   font-size: clamp(2.5rem, 6vw, 4rem);
