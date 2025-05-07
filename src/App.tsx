@@ -1,44 +1,143 @@
-import { useState } from 'react';
-import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
-import '@fontsource-variable/urbanist';
-import '@fontsource-variable/eb-garamond';
-import { keyframes } from '@emotion/react';
+import { useState, useEffect } from "react";
+import styled from "@emotion/styled";
+import { motion } from "framer-motion";
+import "@fontsource-variable/urbanist";
+import "@fontsource-variable/eb-garamond";
+import { keyframes } from "@emotion/react";
+import emailjs from '@emailjs/browser';
+
+// Initialize EmailJS
+emailjs.init("i1ncop8"); // Your public key
 
 const zoomVariants = {
   initial: { scale: 0.96, opacity: 0, y: 32 },
-  animate: { scale: 1, opacity: 1, y: 0, transition: { type: 'spring', stiffness: 180, damping: 24, duration: 0.5 } },
-  hover: { scale: 1.03 }
+  animate: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 180, damping: 24, duration: 0.5 },
+  },
+  hover: { 
+    scale: 1.02,
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  },
 };
+
+const cardVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { type: "spring", stiffness: 100, damping: 20 }
+  },
+  hover: {
+    y: -10,
+    transition: { type: "spring", stiffness: 400, damping: 10 }
+  }
+};
+
+const shadowAnimation = keyframes`
+  0% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05),
+                0 0 0 0 rgba(26, 26, 26, 0.1);
+  }
+  50% {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08),
+                0 0 20px 2px rgba(26, 26, 26, 0.15);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05),
+                0 0 0 0 rgba(26, 26, 26, 0.1);
+  }
+`;
+
+const floatingAnimation = keyframes`
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+`;
 
 const highlightRun = keyframes`
   0% { background-position: 100% 0; }
   100% { background-position: 0% 0; }
 `;
 
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
+
 const RunningFadingTitle = styled(motion.h1)`
-  font-family: 'EB Garamond Variable', serif;
-  font-size: clamp(1.5rem, 4vw, 2.8rem);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: #7a5a36;
-  line-height: 1.1;
+  font-family: "EB Garamond Variable", serif;
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  line-height: 1.2;
   text-align: center;
-  margin-bottom: 2.5rem;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #e2c9b0 0%, #7a5a36 50%, #e2c9b0 100%);
+  margin-bottom: clamp(2rem, 3vw, 3rem);
+  text-transform: none;
+  background: linear-gradient(90deg, #1a1a1a 0%, #4a4a4a 50%, #1a1a1a 100%);
   background-size: 200% 100%;
   background-position: 0% 0;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
-  animation: backgroundMove 10s linear infinite;
+  animation: ${highlightRun} 10s linear infinite;
   word-spacing: 0.25em;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto clamp(2rem, 3vw, 3rem) auto;
+  position: relative;
+  padding: 0 1rem;
 
-  @keyframes backgroundMove {
-    0% { background-position: 0% 0; }
-    100% { background-position: 100% 0; }
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.2) 20%,
+      rgba(26, 26, 26, 0.2) 80%,
+      transparent 100%
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.2) 20%,
+      rgba(26, 26, 26, 0.2) 80%,
+      transparent 100%
+    );
+  }
+
+  span {
+    display: block;
+    font-size: 0.4em;
+    font-family: "Urbanist Variable", sans-serif;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    opacity: 0.7;
   }
 `;
 
@@ -46,9 +145,25 @@ const Wrapper = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff url('data:image/svg+xml;utf8,<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="15" width="30" height="30" rx="10" fill="%23f5e9da" fill-opacity="0.18"/><circle cx="90" cy="25" r="12" fill="%23e2c9b0" fill-opacity="0.13"/><circle cx="30" cy="100" r="10" fill="%23e2c9b0" fill-opacity="0.10"/><rect x="5" y="80" width="18" height="18" rx="6" fill="%23e2c9b0" fill-opacity="0.15"/><rect x="80" y="80" width="22" height="22" rx="7" fill="%23e2c9b0" fill-opacity="0.12"/></svg>') repeat;
-  color: #111;
-  font-family: 'Urbanist Variable', 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: "Urbanist Variable", "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100vh;
+    background: 
+      radial-gradient(circle at 20% 20%, rgba(26, 26, 26, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(26, 26, 26, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
 `;
 
 const Navbar = styled.nav`
@@ -56,24 +171,45 @@ const Navbar = styled.nav`
   padding: 2.5rem 3vw 1.5rem 3vw;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   background: transparent;
   box-shadow: none;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 `;
 
 const Logo = styled(motion.div)`
-  font-family: 'Urbanist Variable', 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  background: linear-gradient(110deg, rgba(122,90,54,1) 0%, rgba(122, 90, 54, 0.3) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  transition: letter-spacing 0.3s;
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: #1a1a1a;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.5rem 1rem;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid rgba(26, 26, 26, 0.1);
+    transform: scale(1.1);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
   &:hover {
-    letter-spacing: 0.04em;
+    letter-spacing: 0.15em;
+    
+    &::before {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
 `;
 
@@ -83,117 +219,630 @@ const Main = styled.main`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6vw 2vw 4vw 2vw;
+  padding: clamp(2rem, 6vw, 6rem) clamp(1rem, 2vw, 2rem);
+  width: 100%;
+  position: relative;
+  z-index: 2;
 `;
 
 const Gallery = styled.section`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.5vw;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: clamp(2rem, 3vw, 4rem);
   justify-content: center;
   margin-bottom: 6vw;
+  max-width: 1400px;
+  width: 100%;
   will-change: transform, opacity;
+  animation: ${fadeIn} 0.8s ease-out forwards;
+  padding: 0 2rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 600px));
+  }
+`;
+
+const CardTitle = styled(motion.div)`
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1rem;
+  font-weight: 300;
+  color: #ffffff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1.5rem;
+  text-align: left;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.8) 0%,
+    rgba(0,0,0,0.4) 50%,
+    rgba(0,0,0,0) 100%
+  );
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 `;
 
 const GalleryItem = styled(motion.div)`
-  width: 400px;
-  height: 520px;
-  background: transparent;
-  border-radius: 1.5rem;
+  width: 100%;
+  height: auto;
+  min-height: 500px;
+  background: #ffffff;
+  border-radius: 0;
   overflow: hidden;
   position: relative;
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform, opacity;
-  &:hover {
-    transform: translateY(-4px) scale(1.025);
+  animation: ${shadowAnimation} 4s ease-in-out infinite;
+  border: 1px solid rgba(26, 26, 26, 0.05);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0.2) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
   }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(26, 26, 26, 0.1) 0%,
+      transparent 50%,
+      rgba(26, 26, 26, 0.1) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+  }
+
+  &:hover {
+    animation: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1),
+                0 0 20px 2px rgba(26, 26, 26, 0.15);
+    transform: translateY(-10px);
+    
+    &::before, &::after {
+      opacity: 1;
+    }
+
+    ${CardTitle} {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
   display: flex;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-`;
 
-const CardTitle = styled.div`
-  font-family: 'EB Garamond Variable', serif;
-  font-size: 1.20rem;
-  font-weight: 400;
-  color: #a47551;
-  letter-spacing: 0.01em;
-  opacity: 0.92;
-  text-transform: uppercase;
-  background: linear-gradient(90deg, #e2c9b0 0%, #a47551 50%, #e2c9b0 100%);
-  background-size: 200% 100%;
-  background-position: 100% 0;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  animation: ${highlightRun} 3.5s cubic-bezier(0.4,0,0.2,1) infinite alternate;
-  padding: 1.2rem 0 0.7rem 0;
-  text-align: center;
+  @media (min-width: 768px) {
+    height: 600px;
+  }
 `;
 
 const GalleryImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 1.5rem;
-  background: #e2c9b0;
+  background: #f5f5f5;
   display: block;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  ${GalleryItem}:hover & {
+    transform: scale(1.05);
+  }
 `;
 
-const SquigglyBorderWrapper = styled.div`
-  position: relative;
+const CardDescription = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 2rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  margin: 3.5rem auto 0 auto;
-  max-width: 440px;
-  width: 100%;
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: 3;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  h3 {
+    font-family: "EB Garamond Variable", serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    transform: translateY(20px);
+    transition: transform 0.4s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -0.5rem;
+      left: 0;
+      width: 40px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.3);
+      transition: width 0.4s ease;
+    }
+  }
+
+  p {
+    font-family: "Urbanist Variable", sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+    transform: translateY(20px);
+    transition: transform 0.4s ease 0.1s;
+  }
+
+  ${GalleryItem}:hover & {
+    opacity: 1;
+
+    h3, p {
+      transform: translateY(0);
+    }
+
+    h3::after {
+      width: 60px;
+    }
+  }
 `;
 
 const ContactCardContent = styled(motion.div)`
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 1.5rem;
-  background: linear-gradient(90deg, #f5e9da 0%, #e2c9b0 100%);
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 24px rgba(164, 117, 81, 0.13);
-  padding: 2.2rem 2.5rem;
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
   width: 100%;
+  max-width: 400px;
   backdrop-filter: blur(2px);
   justify-content: center;
+  text-align: center;
+  border: 1px solid rgba(26, 26, 26, 0.05);
+  animation: ${shadowAnimation} 4s ease-in-out infinite;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      linear-gradient(90deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px) 0 0 / 20px 20px,
+      linear-gradient(0deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px) 0 0 / 20px 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &:hover {
+    animation: none;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1),
+                0 0 20px 2px rgba(26, 26, 26, 0.15);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  @media (min-width: 480px) {
+    flex-direction: row;
+    text-align: left;
+    padding: 2.5rem;
+    gap: 2rem;
+  }
 `;
 
 const Philosophy = styled(motion.div)`
   text-align: center;
   font-size: 1.25rem;
-  color: #7a5a36;
-  margin: 2.5rem 0 0 0;
-  font-family: 'EB Garamond Variable', serif;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  opacity: 0.85;
+  color: #1a1a1a;
+  margin: 3rem 0 0 0;
+  font-family: "EB Garamond Variable", serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+  max-width: 800px;
+  line-height: 1.6;
+`;
+
+const BlueprintOverlay = styled(motion.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(90deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px) 0 0 / 20px 20px,
+    linear-gradient(0deg, rgba(26, 26, 26, 0.03) 1px, transparent 1px) 0 0 / 20px 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+`;
+
+const ContactPopup = styled(motion.div)`
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 800px;
+  max-width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.1) 20%,
+      rgba(26, 26, 26, 0.1) 80%,
+      transparent 100%
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.1) 20%,
+      rgba(26, 26, 26, 0.1) 80%,
+      transparent 100%
+    );
+  }
+`;
+
+const ContactHeader = styled.div`
+  padding: 2rem 4rem 2rem 2rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+  background: linear-gradient(to right, rgba(26, 26, 26, 0.02), transparent);
+`;
+
+const ContactContent = styled.div`
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  overflow-y: auto;
+  max-height: calc(92vh - 200px);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ContactForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const FormInput = styled.input`
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+  background: rgba(26, 26, 26, 0.02);
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: rgba(26, 26, 26, 0.2);
+    background: #ffffff;
+  }
+`;
+
+const FormTextarea = styled.textarea`
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+  background: rgba(26, 26, 26, 0.02);
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1rem;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    border-color: rgba(26, 26, 26, 0.2);
+    background: #ffffff;
+  }
+`;
+
+const FormStatus = styled(motion.div)`
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 0.9rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &.success {
+    background: rgba(46, 160, 67, 0.1);
+    color: #2ea043;
+  }
+
+  &.error {
+    background: rgba(218, 54, 51, 0.1);
+    color: #da3633;
+  }
+`;
+
+const SubmitButton = styled.button`
+  margin-top: 1rem;
+  padding: 1rem;
+  border: none;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  position: relative;
+  overflow: hidden;
+
+  &:disabled {
+    background: #666;
+    cursor: not-allowed;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  &:disabled::after {
+    opacity: 1;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+`;
+
+const PopupImage = styled(motion.img)`
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  position: relative;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+  flex-shrink: 0;
+  width: 300px;
+`;
+
+const PopupTitle = styled.h2`
+  font-family: "EB Garamond Variable", serif;
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0;
+  color: #1a1a1a;
+  position: relative;
+  display: inline-block;
+  max-width: calc(100% - 6rem);
+  word-wrap: break-word;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 200px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -0.5rem;
+    left: 0;
+    width: 60px;
+    height: 1px;
+    background: rgba(26, 26, 26, 0.2);
+  }
+`;
+
+const SpecItem = styled.div`
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.02);
+  border: 1px solid rgba(26, 26, 26, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+
+  span:first-child {
+    font-size: 0.9rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  span:last-child {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    font-weight: 300;
+  }
+`;
+
+const PopupCard = styled(motion.div)`
+  background: #ffffff;
+  border-radius: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  width: 800px;
+  max-width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.1) 20%,
+      rgba(26, 26, 26, 0.1) 80%,
+      transparent 100%
+    );
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+      transparent 0%,
+      rgba(26, 26, 26, 0.1) 20%,
+      rgba(26, 26, 26, 0.1) 80%,
+      transparent 100%
+    );
+  }
+`;
+
+const PopupHeader = styled.div`
+  padding: 2rem 4rem 2rem 2rem;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+  background: linear-gradient(to right, rgba(26, 26, 26, 0.02), transparent);
+  flex-wrap: wrap;
+`;
+
+const PopupContent = styled.div`
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  overflow-y: auto;
+  max-height: calc(92vh - 200px);
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const PopupDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const PopupDescription = styled.p`
+  font-family: "Urbanist Variable", sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #4a4a4a;
+  margin: 0;
+`;
+
+const PopupSpecs = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
 `;
 
 function App() {
+  console.log('App component rendering');
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [contactOpen, setContactOpen] = useState(false);
+  const [formStatus, setFormStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cards = [
     {
-      img: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80',
-      label: 'Residential Home',
-      description: 'A modern home designed with sustainable materials and open spaces, blending nature and architecture.'
+      img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      label: "Residential Design",
+      description:
+        "Minimalist living spaces that harmonize with nature, featuring clean lines and sustainable materials.",
     },
     {
-      img: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80',
-      label: 'Commercial Space',
-      description: 'A collaborative office space that inspires creativity and productivity with natural light and flexible layouts.'
-    }
+      img: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
+      label: "Commercial Architecture",
+      description:
+        "Innovative workspaces that inspire creativity and productivity through thoughtful design and natural elements.",
+    },
   ];
 
   return (
@@ -202,90 +851,120 @@ function App() {
         <Logo
           initial={{ opacity: 0, scale: 0.7, y: -40 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1.1, type: 'spring', stiffness: 120, damping: 18 }}
+          transition={{
+            duration: 1.1,
+            type: "spring",
+            stiffness: 120,
+            damping: 18,
+          }}
         >
-          ScioScape
+          SCIOSCAPE
         </Logo>
       </Navbar>
       <Main>
-        <RunningFadingTitle style={{
-          width:  'calc(2 * 400px + 2.5vw)',
-          maxWidth: 900,
-          margin: '0 auto 2.5rem auto',
-          display: 'block',
-        }}>
-          Where Ideas become Experiences
+        <RunningFadingTitle
+          style={{
+            width: "100%",
+            maxWidth: 1200,
+            margin: "0 auto 3rem auto",
+            display: "block",
+          }}
+        >
+          Crafting Spaces
+          <span>That Inspire</span>
         </RunningFadingTitle>
-        <Gallery style={{width: '100%', maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(2, 400px)', justifyContent: 'center', gap: '2.5vw'}}>
-          <GalleryItem
-            variants={zoomVariants}
-            initial="initial"
-            animate="animate"
-            whileHover="hover"
-            transition={{ duration: 0.5, type: 'spring', stiffness: 180, damping: 24, delay: 0 }}
-            onClick={() => setOpenIndex(0)}
-            style={{ zIndex: openIndex === 0 ? 100 : 1 }}
-            key={cards[0].label}
-          >
-            <CardTitle>
-              Residential Bungalows
-            </CardTitle>
-            <div style={{flex: 1, display: 'flex'}}>
-              <GalleryImage src={cards[0].img} alt={cards[0].label} />
-            </div>
-          </GalleryItem>
-          <GalleryItem
-            variants={zoomVariants}
-            initial="initial"
-            animate="animate"
-            whileHover="hover"
-            transition={{ duration: 0.5, type: 'spring', stiffness: 180, damping: 24, delay: 0.1 }}
-            onClick={() => setOpenIndex(1)}
-            style={{ zIndex: openIndex === 1 ? 100 : 1 }}
-            key={cards[1].label}
-          >
-            <CardTitle>
-              Commercial spaces
-            </CardTitle>
-            <div style={{flex: 1, display: 'flex'}}>
-              <GalleryImage src={cards[1].img} alt={cards[1].label} />
-            </div>
-          </GalleryItem>
+        <Gallery>
+          {cards.map((card, index) => (
+            <GalleryItem
+              key={card.label}
+              variants={cardVariants}
+              initial="initial"
+              animate="animate"
+              whileHover="hover"
+              transition={{
+                duration: 0.5,
+                type: "spring",
+                stiffness: 180,
+                damping: 24,
+                delay: index * 0.1,
+              }}
+              onClick={() => setOpenIndex(index)}
+              style={{ zIndex: openIndex === index ? 100 : 1 }}
+            >
+              <GalleryImage src={card.img} alt={card.label} />
+              <CardTitle>{card.label}</CardTitle>
+              <CardDescription>
+                <h3>{card.label}</h3>
+                <p>{card.description}</p>
+              </CardDescription>
+            </GalleryItem>
+          ))}
         </Gallery>
-        <SquigglyBorderWrapper>
-          <ContactCardContent
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, type: 'spring', stiffness: 80, delay: 0.3 }}
-            whileHover={{ scale: 1.04, boxShadow: '0 8px 32px rgba(164,117,81,0.18)' }}
-            style={{ cursor: 'pointer' }}
-            onClick={() => setContactOpen(true)}
+        <ContactCardContent
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: 1.1,
+            type: "spring",
+            stiffness: 80,
+            delay: 0.3,
+          }}
+          whileHover={{
+            scale: 1.02,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          }}
+          style={{ cursor: "pointer" }}
+          onClick={() => setContactOpen(true)}
+        >
+          <img
+            src="https://randomuser.me/api/portraits/women/61.jpg"
+            alt="Anagha Vaidya"
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: "50%",
+              objectFit: "cover",
+              boxShadow: "0 1px 8px rgba(0,0,0,0.10)",
+            }}
+          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
           >
-            <img
-              src="https://randomuser.me/api/portraits/women/61.jpg"
-              alt="Anagha Vaidya"
-              style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 1px 8px rgba(0,0,0,0.10)' }}
-            />
-            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
-              <span style={{fontWeight: 700, fontSize: '1.18rem', color: '#7a5a36', letterSpacing: '0.01em'}}>Anagha Vaidya</span>
-              <span style={{fontSize: '1rem', color: '#a47551', marginBottom: 2}}>Architect</span>
-              <div style={{display: 'flex', gap: '0.7rem', marginTop: 8}}>
-                <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" style={{color: '#a47551', fontSize: '1.3rem', textDecoration: 'none'}} aria-label="Instagram">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a47551" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
-                </a>
-                <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer" style={{color: '#a47551', fontSize: '1.3rem', textDecoration: 'none'}} aria-label="Facebook">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a47551" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a4 4 0 0 0-4 4v3H7v4h4v8h4v-8h3l1-4h-4V6a1 1 0 0 1 1-1h3z"/></svg>
-                </a>
-              </div>
-            </div>
-          </ContactCardContent>
-        </SquigglyBorderWrapper>
+            <span
+              style={{
+                fontWeight: 300,
+                fontSize: "1.2rem",
+                color: "#1a1a1a",
+                letterSpacing: "0.05em",
+              }}
+            >
+              Anagha Vaidya
+            </span>
+            <span
+              style={{ 
+                fontSize: "0.9rem", 
+                color: "#4a4a4a", 
+                marginBottom: 2,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase"
+              }}
+            >
+              Principal Architect
+            </span>
+          </div>
+        </ContactCardContent>
         <Philosophy
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 2.2, delay: 0.7 }}
         >
-          "The sun never knew how great it was until it hit the side of a building."<br />
+          "The sun never knew how great it was until it hit the side of a
+          building."
+          <br />
         </Philosophy>
         {contactOpen && (
           <motion.div
@@ -293,95 +972,184 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             style={{
-              position: 'fixed',
+              position: "fixed",
               top: 0,
               left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.18)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 300
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.18)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 300,
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
             }}
             onClick={() => setContactOpen(false)}
           >
-            <motion.div
-              initial={{ scale: 0.7, opacity: 0, y: 120 }}
-              animate={{ scale: 1.1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.7, opacity: 0, y: 120 }}
-              transition={{ type: 'spring', stiffness: 180, damping: 22 }}
-              style={{
-                background: 'linear-gradient(90deg, #f5e9da 0%, #e2c9b0 100%)',
-                borderRadius: '2rem',
-                boxShadow: '0 16px 64px rgba(164,117,81,0.22)',
-                width: 420,
-                maxWidth: '96vw',
-                maxHeight: '92vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                overflow: 'hidden',
-                position: 'relative',
-                padding: '2.5rem 2rem 2rem 2rem',
+            <ContactPopup
+              initial={{ scale: 0.92, opacity: 0, y: 64 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.92, opacity: 0, y: 64 }}
+              transition={{
+                type: "spring",
+                stiffness: 180,
+                damping: 24,
+                duration: 0.5,
               }}
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
-              <img
-                src="https://randomuser.me/api/portraits/women/61.jpg"
-                alt="Anagha Vaidya"
-                style={{ width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', boxShadow: '0 1px 8px rgba(0,0,0,0.10)', marginBottom: 16 }}
+              <BlueprintOverlay
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
               />
-              <div style={{fontWeight: 700, fontSize: '1.3rem', color: '#7a5a36', marginBottom: 2}}>Anagha Vaidya</div>
-              <div style={{fontSize: '1.05rem', color: '#a47551', marginBottom: 18}}>Architect</div>
-              <form style={{width: '100%', display: 'flex', flexDirection: 'column', gap: 16}} onSubmit={async e => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const formData = new FormData(form);
-                const name = formData.get('name');
-                const email = formData.get('email');
-                const message = formData.get('message');
-                // Send to Formspree (or similar service) for contact@scioscape.com
-                await fetch('https://formspree.io/f/xqkrqjzv', {
-                  method: 'POST',
-                  headers: { 'Accept': 'application/json' },
-                  body: new URLSearchParams({
-                    name: name as string,
-                    email: email as string,
-                    message: message as string,
-                    _replyto: email as string,
-                    _subject: 'New message from ScioScape website',
-                  })
-                });
-                setContactOpen(false);
-              }}>
-                <input name="name" type="text" placeholder="Your Name" required style={{padding: '0.7rem 1rem', borderRadius: 8, border: '1px solid #e2c9b0', fontSize: '1rem', outline: 'none'}} />
-                <input name="email" type="email" placeholder="Your Email" required style={{padding: '0.7rem 1rem', borderRadius: 8, border: '1px solid #e2c9b0', fontSize: '1rem', outline: 'none'}} />
-                <textarea name="message" placeholder="Message" required rows={4} style={{padding: '0.7rem 1rem', borderRadius: 8, border: '1px solid #e2c9b0', fontSize: '1rem', outline: 'none', resize: 'vertical'}} />
-                <button type="submit" style={{marginTop: 8, padding: '0.8rem 0', borderRadius: 8, border: 'none', background: '#a47551', color: '#fff', fontWeight: 700, fontSize: '1.08rem', cursor: 'pointer', transition: 'background 0.2s'}}>
-                  Send Message
-                </button>
-              </form>
+              <ContactHeader>
+                <PopupImage
+                  src="https://randomuser.me/api/portraits/women/61.jpg"
+                  alt="Anagha Vaidya"
+                  style={{ width: 120, height: 120, borderRadius: '50%' }}
+                  initial={{ scale: 1.1, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                />
+                <div>
+                  <PopupTitle>Anagha Vaidya</PopupTitle>
+                  <span style={{ 
+                    fontSize: "1.1rem", 
+                    color: "#666",
+                    display: "block",
+                    marginTop: "0.5rem",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase"
+                  }}>
+                    Principal Architect
+                  </span>
+                </div>
+              </ContactHeader>
+              <ContactContent>
+                <ContactForm
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsSubmitting(true);
+                    setFormStatus({ type: null, message: '' });
+
+                    try {
+                      const form = e.currentTarget;
+                      const formData = new FormData(form);
+                      const name = formData.get("name");
+                      const email = formData.get("email");
+                      const message = formData.get("message");
+
+                      await emailjs.send(
+                        'service_i1ncop8', // Your EmailJS service ID
+                        'template_hanu', // Your EmailJS template ID
+                        {
+                          to_email: 'hanupratap1999@gmail.com',
+                          from_name: name,
+                          from_email: email,
+                          message: message,
+                          reply_to: email,
+                        },
+                        'i1ncop8' // Your EmailJS public key
+                      );
+
+                      setFormStatus({
+                        type: 'success',
+                        message: 'Thank you for your message. We will get back to you soon.'
+                      });
+                      form.reset();
+                    } catch (error) {
+                      console.error('Error sending email:', error);
+                      setFormStatus({
+                        type: 'error',
+                        message: 'Sorry, there was an error sending your message. Please try again or email us directly at hanupratap1999@gmail.com'
+                      });
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
+                >
+                  <FormInput
+                    name="name"
+                    type="text"
+                    placeholder="Your Name"
+                    required
+                    disabled={isSubmitting}
+                  />
+                  <FormInput
+                    name="email"
+                    type="email"
+                    placeholder="Your Email"
+                    required
+                    disabled={isSubmitting}
+                  />
+                  <FormTextarea
+                    name="message"
+                    placeholder="Message"
+                    required
+                    disabled={isSubmitting}
+                  />
+                  <SubmitButton 
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </SubmitButton>
+                  {formStatus.type && (
+                    <FormStatus
+                      className={formStatus.type}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                    >
+                      {formStatus.message}
+                    </FormStatus>
+                  )}
+                </ContactForm>
+                <div style={{ padding: "1rem" }}>
+                  <SpecItem>
+                    <span>Experience</span>
+                    <span>15+ Years</span>
+                  </SpecItem>
+                  <SpecItem>
+                    <span>Specialization</span>
+                    <span>Sustainable Design</span>
+                  </SpecItem>
+                  <SpecItem>
+                    <span>Location</span>
+                    <span>San Francisco, CA</span>
+                  </SpecItem>
+                  <SpecItem>
+                    <span>Languages</span>
+                    <span>English, Hindi, Marathi</span>
+                  </SpecItem>
+                </div>
+              </ContactContent>
               <button
                 onClick={() => setContactOpen(false)}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 18,
-                  right: 24,
-                  background: 'rgba(255,255,255,0.85)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 36,
-                  height: 36,
-                  fontSize: 22,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                  right: 28,
+                  background: "rgba(255,255,255,0.85)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 44,
+                  height: 44,
+                  fontSize: 28,
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.3s ease",
                 }}
                 aria-label="Close"
               >
                 ×
               </button>
-            </motion.div>
+            </ContactPopup>
           </motion.div>
         )}
         {openIndex !== null && (
@@ -390,66 +1158,106 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             style={{
-              position: 'fixed',
+              position: "fixed",
               top: 0,
               left: 0,
-              width: '100vw',
-              height: '100vh',
-              background: 'rgba(0,0,0,0.18)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 200
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.18)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 200,
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
             }}
             onClick={() => setOpenIndex(null)}
           >
-            <motion.div
+            <PopupCard
               initial={{ scale: 0.92, opacity: 0, y: 64 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.92, opacity: 0, y: 64 }}
-              transition={{ type: 'spring', stiffness: 180, damping: 24, duration: 0.5 }}
-              style={{
-                background: '#fff',
-                borderRadius: '2.5rem',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.10)',
-                width: 600,
-                maxWidth: '96vw',
-                maxHeight: '92vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                overflow: 'hidden',
-                position: 'relative',
-                paddingBottom: 32,
-                willChange: 'transform, opacity',
+              transition={{
+                type: "spring",
+                stiffness: 180,
+                damping: 24,
+                duration: 0.5,
               }}
-              onClick={e => e.stopPropagation()}
+              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
-              <img src={cards[openIndex].img} alt={cards[openIndex].label} style={{ width: '100%', height: 340, objectFit: 'cover' }} />
-              <div style={{ padding: '2.2rem', width: '100%' }}>
-                <h2 style={{ margin: 0, fontSize: '2.5rem', fontWeight: 800 }}>{cards[openIndex].label}</h2>
-                <p style={{ margin: '1.2rem 0 0 0', color: '#444', fontSize: '1.25rem', lineHeight: 1.6 }}>{cards[openIndex].description}</p>
-              </div>
+              <BlueprintOverlay
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              />
+              <PopupHeader>
+                <PopupImage
+                  src={cards[openIndex].img}
+                  alt={cards[openIndex].label}
+                  initial={{ scale: 1.1, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                />
+                <PopupTitle>{cards[openIndex].label}</PopupTitle>
+              </PopupHeader>
+              <PopupContent>
+                <PopupDetails>
+                  <PopupDescription>{cards[openIndex].description}</PopupDescription>
+                  <PopupSpecs>
+                    <SpecItem>
+                      <span>Project Type</span>
+                      <span>{cards[openIndex].label}</span>
+                    </SpecItem>
+                    <SpecItem>
+                      <span>Status</span>
+                      <span>Completed</span>
+                    </SpecItem>
+                    <SpecItem>
+                      <span>Location</span>
+                      <span>San Francisco, CA</span>
+                    </SpecItem>
+                    <SpecItem>
+                      <span>Year</span>
+                      <span>2024</span>
+                    </SpecItem>
+                  </PopupSpecs>
+                </PopupDetails>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <PopupImage
+                    src={cards[openIndex].img}
+                    alt={`${cards[openIndex].label} detail`}
+                    style={{ height: '100%' }}
+                  />
+                </motion.div>
+              </PopupContent>
               <button
                 onClick={() => setOpenIndex(null)}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   top: 18,
                   right: 28,
-                  background: 'rgba(255,255,255,0.85)',
-                  border: 'none',
-                  borderRadius: '50%',
+                  background: "rgba(255,255,255,0.85)",
+                  border: "none",
+                  borderRadius: "50%",
                   width: 44,
                   height: 44,
                   fontSize: 28,
-                  cursor: 'pointer',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                  cursor: "pointer",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  transition: "all 0.3s ease",
                 }}
                 aria-label="Close"
               >
                 ×
               </button>
-            </motion.div>
+            </PopupCard>
           </motion.div>
         )}
       </Main>

@@ -17,6 +17,13 @@ const globalStyles = css`
     --secondary: #eaeaea;
   }
 
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   body {
     font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -28,6 +35,12 @@ const globalStyles = css`
     font-size: 18px;
     letter-spacing: -0.01em;
     font-weight: 400;
+    min-height: 100vh;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
     min-height: 100vh;
   }
 
@@ -60,9 +73,50 @@ const globalStyles = css`
   }
 `
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.error('Error:', error);
+    console.error('Error Info:', errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ 
+          padding: '20px', 
+          textAlign: 'center',
+          color: '#ff0000',
+          fontFamily: 'monospace'
+        }}>
+          <h1>Something went wrong.</h1>
+          <p>Please check the console for more details.</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+const root = document.getElementById('root');
+if (!root) {
+  throw new Error('Root element not found');
+}
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <Global styles={globalStyles} />
-    <App />
+    <ErrorBoundary>
+      <Global styles={globalStyles} />
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>,
 )
